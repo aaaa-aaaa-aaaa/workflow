@@ -59,4 +59,18 @@ class WorkflowController extends Controller {
             case _ => response.notFound.jsonError(s"No Workflow found with id ${request.workflow_id}")
         }
     }
+
+    // TODO should create new execution against workflow, or 404 if no such workflow
+    post("/workflows/:workflow_id/executions") { request: Request =>
+        response.notImplemented.body("TODO")
+    }
+
+    // TODO should return workflow execution status here, or 404 if workflow/execution doesn't exist
+    get("/workflows/:workflow_id/executions/:workflow_execution_id") { request: Request =>
+        response.notImplemented.body("TODO")
+    }
+    // TODO should increment workflow execution step count, or 404 if workflow/execution doesn't exist, or 400 if step count > max
+    put("/workflows/:workflow_id/executions/:workflow_execution_id") { request: Request =>
+        response.notImplemented.body("TODO")
+    }
 }

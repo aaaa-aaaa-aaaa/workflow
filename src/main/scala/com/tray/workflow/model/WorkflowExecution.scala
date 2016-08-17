@@ -1,13 +1,19 @@
 package com.tray.workflow.model
 
 import java.time.LocalDateTime
+import java.util.concurrent.atomic.AtomicInteger
 
-// TODO created not timezone insensitive
-// TODO no checks on input
-// TODO is this even the right way to instantiate params?
-case class WorkflowExecution(val id: String, val workflowId: String, val stepCount: Int, val created: LocalDateTime) {
-    val id: String = id
-    val workflowId: String = workflowId
-    val stepCount: Int = id
-    val created: LocalDateTime = created
+case class WorkflowExecution(id: String, maxSteps: Int) {
+
+    private val currentStep: AtomicInteger = new AtomicInteger()
+    val created: LocalDateTime = new LocalDateTime()
+
+    def next(): Option[Int] = {
+        // TODO this is overall still not atomic
+        val steps = currentStep.incrementAndGet()
+        if (steps >= maxSteps) {
+            None
+        }
+        Some(steps)
+    }
 }

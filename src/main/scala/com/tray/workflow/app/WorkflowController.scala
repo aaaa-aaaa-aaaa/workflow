@@ -51,4 +51,12 @@ class WorkflowController extends Controller {
             case _ => response.notFound.jsonError(s"No Workflow found with id ${request.workflow_id}")
         }
     }
+
+    get("/workflows/:workflow_id/executions") { request: WorkflowGetRequest =>
+        val workflow = store.getById(request.workflow_id)
+        workflow match {
+            case w: Workflow => response.ok.json(w.getExecutions())
+            case _ => response.notFound.jsonError(s"No Workflow found with id ${request.workflow_id}")
+        }
+    }
 }

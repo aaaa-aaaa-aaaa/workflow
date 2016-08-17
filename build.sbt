@@ -15,5 +15,6 @@ libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-compiler" % "2.11.0",
     "com.twitter" %% "finagle-http" % "6.36.0",
     "com.twitter" %% "finatra-http" % versions.finatra,
-    "com.twitter" %% "finatra-httpclient" % versions.finatra
+    "com.twitter" %% "finatra-httpclient" % versions.finatra,
+    "org.json4s" %% "json4s-native" % "3.4.0"
 )

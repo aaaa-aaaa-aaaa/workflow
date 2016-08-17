@@ -1,11 +1,22 @@
 package com.tray.workflow.app
+
+import java.util.UUID.randomUUID
+
 import com.tray.workflow.domain.WorkflowGetRequest
 import com.tray.workflow.model.Workflow
 import com.tray.workflow.persistence.{InMemoryWorkflowStore, WorkflowStore}
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
+import org.json4s.DefaultFormats
+import org.json4s.native.JsonMethods.parse
+
 class WorkflowController extends Controller {
 
+    implicit val formats = DefaultFormats
+
+    // TODO method docs
+    // TODO error handling
+    // TODO incorrect route handling
     private val store: WorkflowStore = new InMemoryWorkflowStore()
 
     get("/") { request: Request =>
@@ -18,6 +29,19 @@ class WorkflowController extends Controller {
         response
             .ok
             .json(workflows)
+    }
+
+    post("/workflows") { request: Request =>
+        // TODO move ID generation lower down?
+        val json = parse(request.contentString)
+        val steps = (json \ "number_of_steps").extract[Int]
+
+        val workflow = store.add(Workflow(randomUUID().toString, steps))
+        response
+            .created
+            .json(s"""{
+                "workflow_id": "${workflow.id}"
+            }""")
     }
 
     get("/workflows/:workflow_id") { request: WorkflowGetRequest =>

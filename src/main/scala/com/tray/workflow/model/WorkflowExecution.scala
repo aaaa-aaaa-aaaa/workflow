@@ -8,12 +8,8 @@ case class WorkflowExecution(id: String, maxSteps: Int) {
     private val currentStep: AtomicInteger = new AtomicInteger()
     val created: LocalDateTime = LocalDateTime.now()
 
-    def next(): Option[Int] = {
-        // TODO this is overall still not atomic
-        val steps = currentStep.incrementAndGet()
-        if (steps >= maxSteps) {
-            None
-        }
-        Some(steps)
-    }
+    def finished(): Boolean = currentStep.get() >= maxSteps - 1
+
+    // TODO this needs to conditionally increment atomically
+    def increment() = currentStep.getAndIncrement()
 }

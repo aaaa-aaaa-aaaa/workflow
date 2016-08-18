@@ -2,10 +2,10 @@ package com.tray.workflow.app
 
 import java.util.UUID.randomUUID
 
-import com.tray.workflow.domain.WorkflowGetRequest
-import com.tray.workflow.model.Workflow
+import com.tray.workflow.domain.{WorkflowExecutionGetRequest, WorkflowGetRequest}
+import com.tray.workflow.model.{Workflow, WorkflowExecution}
 import com.tray.workflow.persistence.{InMemoryWorkflowStore, WorkflowStore}
-import com.twitter.finagle.http.Request
+import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finatra.http.Controller
 import org.json4s.DefaultFormats
 import org.json4s.native.JsonMethods.parse
@@ -60,17 +60,69 @@ class WorkflowController extends Controller {
         }
     }
 
-    // TODO should create new execution against workflow, or 404 if no such workflow
-    post("/workflows/:workflow_id/executions") { request: Request =>
-        response.notImplemented.body("TODO")
+    post("/workflows/:workflow_id/executions") { request: WorkflowGetRequest =>
+        // TODO move ID generation lower down?
+        val workflow = store.getById(request.workflow_id)
+        workflow match {
+            case w: Workflow =>
+                val execution = workflow.add(randomUUID().toString)
+                response
+                    .created
+                    .json(s"""{
+                        "workflow_execution_id": "${execution.id}"
+                    }""")
+            case _ => response
+                .notFound
+                .jsonError(s"No Workflow found with id ${request.workflow_id}")
+        }
     }
 
-    // TODO should return workflow execution status here, or 404 if workflow/execution doesn't exist
-    get("/workflows/:workflow_id/executions/:workflow_execution_id") { request: Request =>
-        response.notImplemented.body("TODO")
+    get("/workflows/:workflow_id/executions/:workflow_execution_id") { request: WorkflowExecutionGetRequest =>
+        val workflow = store.getById(request.workflow_id)
+        workflow match {
+            case w: Workflow =>
+                val execution = w.getById(request.workflow_execution_id)
+                execution match {
+                    case e: WorkflowExecution =>
+                        response
+                            .ok
+                            .json(
+                            s"""{
+                                "finished": "${e.finished()}"
+                            }""")
+                    case _ =>
+                        response
+                            .notFound
+                            .jsonError(
+                                s"""No Workflow Execution found with id ${request.workflow_execution_id}
+                                on Workflow ${request.workflow_id}""")
+                }
+            case _ => response
+                .notFound
+                .jsonError(s"No Workflow found with id ${request.workflow_id}")
+        }
     }
-    // TODO should increment workflow execution step count, or 404 if workflow/execution doesn't exist, or 400 if step count > max
-    put("/workflows/:workflow_id/executions/:workflow_execution_id") { request: Request =>
-        response.notImplemented.body("TODO")
+
+    put("/workflows/:workflow_id/executions/:workflow_execution_id") { request: WorkflowExecutionGetRequest =>
+        val workflow = store.getById(request.workflow_id)
+        workflow match {
+            case w: Workflow =>
+                val execution = w.getById(request.workflow_execution_id)
+                execution match {
+                    case e: WorkflowExecution =>
+                        // TODO 400 if execution has finished
+                        response
+                            .noContent
+                    case _ =>
+                        response
+                            .notFound
+                            .jsonError(
+                                s"""No Workflow Execution found with id ${request.workflow_execution_id}
+                                on Workflow ${request.workflow_id}""")
+                }
+            case _ => response
+                .notFound
+                .jsonError(s"No Workflow found with id ${request.workflow_id}")
+        }
     }
 }

@@ -36,14 +36,14 @@ class WorkflowController extends Controller {
         // TODO move ID generation lower down?
         val workflow = store.getById(request.workflow_id)
         workflow match {
-            case w: Workflow =>
+            case Some(w) =>
                 val execution = workflow.add(randomUUID().toString)
                 response
                     .created
                     .json(s"""{
                         "workflow_execution_id": "${execution.id}"
                     }""")
-            case _ => response
+            case None => response
                 .notFound
                 .jsonError(s"No Workflow found with id ${request.workflow_id}")
         }
@@ -52,7 +52,7 @@ class WorkflowController extends Controller {
     get("/workflows/:workflow_id/executions/:workflow_execution_id") { request: WorkflowExecutionGetRequest =>
         val workflow = store.getById(request.workflow_id)
         workflow match {
-            case w: Workflow =>
+            case Some(w) =>
                 val execution = w.getById(request.workflow_execution_id)
                 execution match {
                     case Some(e) =>
@@ -69,7 +69,7 @@ class WorkflowController extends Controller {
                                 s"""No Workflow Execution found with id ${request.workflow_execution_id}
                                 on Workflow ${request.workflow_id}""")
                 }
-            case _ => response
+            case None => response
                 .notFound
                 .jsonError(s"No Workflow found with id ${request.workflow_id}")
         }
@@ -78,7 +78,7 @@ class WorkflowController extends Controller {
     put("/workflows/:workflow_id/executions/:workflow_execution_id") { request: WorkflowExecutionGetRequest =>
         val workflow = store.getById(request.workflow_id)
         workflow match {
-            case w: Workflow =>
+            case Some(w) =>
                 val execution = w.getById(request.workflow_execution_id)
                 execution match {
                     case Some(e) =>
@@ -93,7 +93,7 @@ class WorkflowController extends Controller {
                             .jsonError(s"""No Workflow Execution found with id ${request.workflow_execution_id}
                                 on Workflow ${request.workflow_id}""")
                 }
-            case _ => response
+            case None => response
                 .notFound
                 .jsonError(s"No Workflow found with id ${request.workflow_id}")
         }

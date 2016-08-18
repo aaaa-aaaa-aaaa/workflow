@@ -19,10 +19,6 @@ class WorkflowController extends Controller {
     // TODO incorrect route handling
     private val store: WorkflowStore = new InMemoryWorkflowStore()
 
-    get("/") { request: Request =>
-        response.ok
-    }
-
     //TODO support pagination
     get("/workflows") { request: Request =>
         val workflows = store.getAll()
@@ -59,6 +55,8 @@ class WorkflowController extends Controller {
     get("/workflows/:workflow_id/executions") { request: WorkflowGetRequest =>
         val workflow = store.getById(request.workflow_id)
         workflow match {
+            // TODO executions can't be serialized automatically by Jackson
+            // either a custom marshaller is needed, or the utility GET methods can be removed
             case w: Workflow => response
                 .ok
                 .json(w.getExecutions())

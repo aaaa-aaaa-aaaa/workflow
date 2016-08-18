@@ -25,7 +25,7 @@ case class WorkflowExecution(id: String, maxSteps: Int) {
     /**
       * Increments the current step count, if the current execution has
       * not finished.
-      * 
+      *
       * @return true if increment was successful, false otherwise
       */
     def increment() = synchronized{

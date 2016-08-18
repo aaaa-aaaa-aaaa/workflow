@@ -1,6 +1,7 @@
 package com.tray.workflow.app
 
 import java.util.UUID.randomUUID
+import javax.inject.Inject
 
 import com.tray.workflow.domain.{WorkflowExecutionGetRequest, WorkflowGetRequest}
 import com.tray.workflow.model.{Workflow, WorkflowExecution}
@@ -10,14 +11,13 @@ import com.twitter.finatra.http.Controller
 import org.json4s.DefaultFormats
 import org.json4s.native.JsonMethods.parse
 
-class WorkflowController extends Controller {
+class WorkflowController @Inject()(store: WorkflowStore) extends Controller {
 
     implicit val formats = DefaultFormats
 
     // TODO method docs
     // TODO error handling
     // TODO incorrect route handling
-    private val store: WorkflowStore = new InMemoryWorkflowStore()
 
     post("/workflows") { request: Request =>
         // TODO move ID generation lower down?

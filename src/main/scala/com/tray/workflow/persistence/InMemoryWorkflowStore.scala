@@ -1,8 +1,13 @@
 package com.tray.workflow.persistence
 
+import javax.inject.Singleton
+
 import com.tray.workflow.model.Workflow
 
-class InMemoryWorkflowStore(private var workflows: Map[String, Workflow] = Map[String, Workflow]()) extends WorkflowStore {
+@Singleton
+class InMemoryWorkflowStore extends WorkflowStore {
+
+    private var workflows: Map[String, Workflow] = Map[String, Workflow]()
 
     override def getById(id: String): Option[Workflow] = {
         Option(workflows.getOrElse(id, null))

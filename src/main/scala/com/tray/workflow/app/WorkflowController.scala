@@ -34,10 +34,9 @@ class WorkflowController extends Controller {
 
     post("/workflows/:workflow_id/executions") { request: WorkflowGetRequest =>
         // TODO move ID generation lower down?
-        val workflow = store.getById(request.workflow_id)
-        workflow match {
+        store.getById(request.workflow_id) match {
             case Some(w) =>
-                val execution = workflow.add(randomUUID().toString)
+                val execution = store.getById(request.workflow_id).add(randomUUID().toString)
                 response
                     .created
                     .json(s"""{
@@ -50,11 +49,9 @@ class WorkflowController extends Controller {
     }
 
     get("/workflows/:workflow_id/executions/:workflow_execution_id") { request: WorkflowExecutionGetRequest =>
-        val workflow = store.getById(request.workflow_id)
-        workflow match {
+        store.getById(request.workflow_id) match {
             case Some(w) =>
-                val execution = w.getById(request.workflow_execution_id)
-                execution match {
+                w.getById(request.workflow_execution_id) match {
                     case Some(e) =>
                         response
                             .ok
@@ -76,11 +73,9 @@ class WorkflowController extends Controller {
     }
 
     put("/workflows/:workflow_id/executions/:workflow_execution_id") { request: WorkflowExecutionGetRequest =>
-        val workflow = store.getById(request.workflow_id)
-        workflow match {
+        store.getById(request.workflow_id) match {
             case Some(w) =>
-                val execution = w.getById(request.workflow_execution_id)
-                execution match {
+                w.getById(request.workflow_execution_id) match {
                     case Some(e) =>
                         if (e.increment()) {
                             response.badRequest

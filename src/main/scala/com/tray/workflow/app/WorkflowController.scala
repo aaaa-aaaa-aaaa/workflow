@@ -15,10 +15,12 @@ class WorkflowController @Inject()(store: WorkflowStore) extends Controller {
 
     implicit val formats = DefaultFormats
 
-    // TODO method docs
     // TODO error handling
     // TODO incorrect route handling
 
+    /**
+      * create a new workflow
+      */
     post("/workflows") { request: Request =>
         // TODO move ID generation lower down?
         val json = parse(request.contentString)
@@ -32,6 +34,9 @@ class WorkflowController @Inject()(store: WorkflowStore) extends Controller {
             }""")
     }
 
+    /**
+      * create a new workflow execution for a specific workflow
+      */
     post("/workflows/:workflow_id/executions") { request: WorkflowGetRequest =>
         // TODO move ID generation lower down?
         store.getById(request.workflow_id) match {
@@ -45,6 +50,9 @@ class WorkflowController @Inject()(store: WorkflowStore) extends Controller {
         }
     }
 
+    /**
+      * fetch whether a workflow execution has finished
+      */
     get("/workflows/:workflow_id/executions/:workflow_execution_id") { request: WorkflowExecutionGetRequest =>
         store.getById(request.workflow_id) match {
             case Some(w) =>
@@ -63,6 +71,9 @@ class WorkflowController @Inject()(store: WorkflowStore) extends Controller {
         }
     }
 
+    /**
+      * increment the current step of a workflow execution
+      */
     put("/workflows/:workflow_id/executions/:workflow_execution_id") { request: WorkflowExecutionGetRequest =>
         store.getById(request.workflow_id) match {
             case Some(w) =>

@@ -16,7 +16,7 @@ case class Workflow(id: String, stepCount: Int,
       * @param id the
       * @return the execution if found, null otherwise
       */
-    def getById(id: String): WorkflowExecution = {
+    def getById(id: String): Option[WorkflowExecution] = {
         executions.getOrElse(id, null)
     }
 

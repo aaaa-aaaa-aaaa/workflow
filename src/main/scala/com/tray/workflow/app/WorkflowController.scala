@@ -55,14 +55,14 @@ class WorkflowController extends Controller {
             case w: Workflow =>
                 val execution = w.getById(request.workflow_execution_id)
                 execution match {
-                    case e: WorkflowExecution =>
+                    case Some(e) =>
                         response
                             .ok
                             .json(
                             s"""{
                                 "finished": "${e.finished()}"
                             }""")
-                    case _ =>
+                    case None =>
                         response
                             .notFound
                             .jsonError(
@@ -81,20 +81,17 @@ class WorkflowController extends Controller {
             case w: Workflow =>
                 val execution = w.getById(request.workflow_execution_id)
                 execution match {
-                    case e: WorkflowExecution =>
-                        // TODO 400 if execution has finished
-                        if (execution.increment()) {
+                    case Some(e) =>
+                        if (e.increment()) {
                             response.badRequest
                         } else {
                             response.noContent
                         }
-                        case _ =>
-                            response
-                                .notFound
-                                .jsonError(
-                                    s"""No Workflow Execution found with id ${request.workflow_execution_id}
-                                    on Workflow ${request.workflow_id}""")
-                        }
+                    case None =>
+                        response
+                            .notFound
+                            .jsonError(s"""No Workflow Execution found with id ${request.workflow_execution_id}
+                                on Workflow ${request.workflow_id}""")
                 }
             case _ => response
                 .notFound

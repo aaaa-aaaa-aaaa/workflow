@@ -5,7 +5,7 @@ import java.util.UUID.randomUUID
 import com.tray.workflow.domain.{WorkflowExecutionGetRequest, WorkflowGetRequest}
 import com.tray.workflow.model.{Workflow, WorkflowExecution}
 import com.tray.workflow.persistence.{InMemoryWorkflowStore, WorkflowStore}
-import com.twitter.finagle.http.{Request, Response}
+import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import org.json4s.DefaultFormats
 import org.json4s.native.JsonMethods.parse

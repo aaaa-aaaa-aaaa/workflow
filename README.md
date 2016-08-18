@@ -5,7 +5,15 @@ A RESTful API for creating and executing workflows.
 
 # Installation
 
-TODO
+This application assumes that you have Scala 2.11 installed, and SBT 0.13.0. To set up the project, run the following in an appropriate directory.
+
+```sh
+git clone git@github.com:aaaa-aaaa-aaaa/workflow.git
+cd workflow
+sbt compile
+```
+
+This will checkout the project into the `workflow` directory, install the dependencies, and compile the code.
 
 # Testing
 
@@ -13,7 +21,7 @@ TODO
 
 # Running
 
-TODO
+To run the project, simply execute `sbt run` in the root of the project directory. This will compile and run the application.
 
 # API
 

@@ -69,9 +69,9 @@ class WorkflowController extends Controller {
                 w.getById(request.workflow_execution_id) match {
                     case Some(e) =>
                         if (e.increment()) {
-                            response.badRequest
-                        } else {
                             response.noContent
+                        } else {
+                            response.badRequest
                         }
                     case None => response
                         .notFound

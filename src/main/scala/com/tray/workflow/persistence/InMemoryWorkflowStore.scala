@@ -5,7 +5,7 @@ import com.tray.workflow.model.Workflow
 class InMemoryWorkflowStore(private var workflows: Map[String, Workflow] = Map[String, Workflow]()) extends WorkflowStore {
 
     override def getById(id: String): Option[Workflow] = {
-        workflows.getOrElse(id, null)
+        Option(workflows.getOrElse(id, null))
     }
 
     override def add(workflow: Workflow): Workflow = {

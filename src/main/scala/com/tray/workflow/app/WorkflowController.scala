@@ -83,14 +83,18 @@ class WorkflowController extends Controller {
                 execution match {
                     case e: WorkflowExecution =>
                         // TODO 400 if execution has finished
-                        response
-                            .noContent
-                    case _ =>
-                        response
-                            .notFound
-                            .jsonError(
-                                s"""No Workflow Execution found with id ${request.workflow_execution_id}
-                                on Workflow ${request.workflow_id}""")
+                        if (execution.increment()) {
+                            response.badRequest
+                        } else {
+                            response.noContent
+                        }
+                        case _ =>
+                            response
+                                .notFound
+                                .jsonError(
+                                    s"""No Workflow Execution found with id ${request.workflow_execution_id}
+                                    on Workflow ${request.workflow_id}""")
+                        }
                 }
             case _ => response
                 .notFound

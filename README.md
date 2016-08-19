@@ -15,10 +15,6 @@ sbt compile
 
 This will checkout the project into the `workflow` directory, install the dependencies, and compile the code.
 
-# Testing
-
-TODO
-
 # Running
 
 To run the project, simply execute `sbt run` in the root of the project directory. This will compile and run the application.

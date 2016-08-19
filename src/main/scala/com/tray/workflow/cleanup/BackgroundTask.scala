@@ -11,14 +11,16 @@ import com.tray.workflow.persistence.WorkflowStore
   */
 class BackgroundTask @Inject()(store: WorkflowStore) extends Runnable {
     override def run() = {
-        for (wf <- store.getAll()) {
-            for (wfe <- wf.getExecutions()) {
-                if (wfe.created.isBefore(LocalDateTime.now().minusMinutes(1)) && wfe.finished()) {
-                    wf.removeById(wfe.id)
+        while(true) {
+            for (wf <- store.getAll()) {
+                for (wfe <- wf.getExecutions()) {
+                    if (wfe.created.isBefore(LocalDateTime.now().minusMinutes(1)) && wfe.finished()) {
+                        wf.removeById(wfe.id)
+                    }
                 }
             }
+            // Sleep for 1 min
+            Thread.sleep(60 * 1000)
         }
-
-        Thread.sleep(1000)
     }
 }

@@ -18,7 +18,8 @@ class WorkflowController @Inject()(store: WorkflowStore, task: BackgroundTask) e
 
     implicit val formats = DefaultFormats
 
-    task.run()
+    val background = new Thread(task)
+    background.start()
 
     // TODO incorrect route handling
 

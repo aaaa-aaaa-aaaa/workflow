@@ -27,24 +27,20 @@ class WorkflowController @Inject()(store: WorkflowStore, task: BackgroundTask) e
       * create a new workflow
       */
     post("/workflows") { request: Request =>
-        try {
-            val contentType = Option(request.headerMap.getOrElse("Content-Type", null))
-            if (contentType.isEmpty || !contentType.get.contains("application/json")) {
-                response.badRequest.jsonError("Content-Type must be application/json")
-            }
-            val json = parse(request.contentString)
-            val steps = (json \ "number_of_steps").extract[Int]
-
-            // TODO move ID generation lower down?
-            val workflow = store.add(Workflow(randomUUID().toString, steps))
-            response
-                .created
-                .json(s"""{
-                "workflow_id": "${workflow.id}"
-            }""")
-        } catch {
-            case p: ParseException => response.badRequest.jsonError("Body should be in JSON format")
+        val contentType = Option(request.headerMap.getOrElse("Content-Type", null))
+        if (contentType.isEmpty || !contentType.get.contains("application/json")) {
+            response.badRequest.jsonError("Content-Type must be application/json")
         }
+        val json = parse(request.contentString)
+        val steps = (json \ "number_of_steps").extract[Int]
+
+        // TODO move ID generation lower down?
+        val workflow = store.add(Workflow(randomUUID().toString, steps))
+        response
+            .created
+            .json(s"""{
+            "workflow_id": "${workflow.id}"
+        }""")
     }
 
     /**

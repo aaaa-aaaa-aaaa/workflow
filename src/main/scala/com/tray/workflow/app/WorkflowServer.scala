@@ -15,6 +15,7 @@ class WorkflowServer extends HttpServer {
             .filter[LoggingMDCFilter[Request, Response]]
             .filter[TraceIdMDCFilter[Request, Response]]
             .filter[CommonFilters]
+            .exceptionMapper[ParseExceptionMapper]
             .add[WorkflowController]
     }
 }

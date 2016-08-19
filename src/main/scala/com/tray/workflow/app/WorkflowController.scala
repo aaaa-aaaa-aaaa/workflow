@@ -9,6 +9,7 @@ import com.tray.workflow.persistence.{InMemoryWorkflowStore, WorkflowStore}
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import org.json4s.DefaultFormats
+import org.json4s.ParserUtil.ParseException
 import org.json4s.native.JsonMethods.parse
 
 class WorkflowController @Inject()(store: WorkflowStore) extends Controller {
@@ -22,25 +23,33 @@ class WorkflowController @Inject()(store: WorkflowStore) extends Controller {
       * create a new workflow
       */
     post("/workflows") { request: Request =>
-        // TODO move ID generation lower down?
-        val json = parse(request.contentString)
-        val steps = (json \ "number_of_steps").extract[Int]
+        try {
+            val contentType = Option(request.headerMap.getOrElse("Content-Type", null))
+            if (contentType.isEmpty || !contentType.get.contains("application/json")) {
+                response.badRequest.jsonError("Content-Type must be application/json")
+            }
+            val json = parse(request.contentString)
+            val steps = (json \ "number_of_steps").extract[Int]
 
-        val workflow = store.add(Workflow(randomUUID().toString, steps))
-        response
-            .created
-            .json(s"""{
+            // TODO move ID generation lower down?
+            val workflow = store.add(Workflow(randomUUID().toString, steps))
+            response
+                .created
+                .json(s"""{
                 "workflow_id": "${workflow.id}"
             }""")
+        } catch {
+            case p: ParseException => response.badRequest.jsonError("Body should be in JSON format")
+        }
     }
 
     /**
       * create a new workflow execution for a specific workflow
       */
     post("/workflows/:workflow_id/executions") { request: WorkflowGetRequest =>
-        // TODO move ID generation lower down?
         store.getById(request.workflow_id) match {
             case Some(w) =>
+                // TODO move ID generation lower down?
                 val execution = w.add(randomUUID().toString)
                 response.created
                     .json(s"""{ "workflow_execution_id": "${execution.id}" }""")

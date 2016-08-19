@@ -13,11 +13,20 @@ case class Workflow(id: String, stepCount: Int,
     /**
       * Fetch an execution by ID
       *
-      * @param id the
+      * @param id the ID of the execution to be fetched
       * @return the execution if found, null otherwise
       */
     def getById(id: String): Option[WorkflowExecution] = {
         Option(executions.getOrElse(id, null))
+    }
+
+    /**
+      * Remove an execution by ID
+      *
+      * @param id the ID of the execution to be removed
+      */
+    def removeById(id: String) = {
+        executions = executions - id
     }
 
     /**

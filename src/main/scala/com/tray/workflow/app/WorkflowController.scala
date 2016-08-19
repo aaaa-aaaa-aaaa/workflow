@@ -1,22 +1,25 @@
 package com.tray.workflow.app
 
 import java.util.UUID.randomUUID
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+import com.tray.workflow.cleanup.BackgroundTask
 import com.tray.workflow.domain.{WorkflowExecutionGetRequest, WorkflowGetRequest}
-import com.tray.workflow.model.{Workflow, WorkflowExecution}
-import com.tray.workflow.persistence.{InMemoryWorkflowStore, WorkflowStore}
+import com.tray.workflow.model.Workflow
+import com.tray.workflow.persistence.WorkflowStore
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import org.json4s.DefaultFormats
 import org.json4s.ParserUtil.ParseException
 import org.json4s.native.JsonMethods.parse
 
-class WorkflowController @Inject()(store: WorkflowStore) extends Controller {
+@Singleton
+class WorkflowController @Inject()(store: WorkflowStore, task: BackgroundTask) extends Controller {
 
     implicit val formats = DefaultFormats
 
-    // TODO error handling
+    task.run()
+
     // TODO incorrect route handling
 
     /**
